@@ -3,16 +3,21 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
-#include <wiringPi.h>
+//#include <wiringPi.h>
 
-Blaster::Blaster( std::shared_ptr< Gal >& g ) 
-: _gal( g )
+void delayMicroseconds( int us )
 {
 
 }
 
-static void 
-Delay(int msec)
+Blaster::Blaster()
+{
+
+}
+
+
+void
+Blaster::Delay(int msec)
 {
 //    long start=timeGetTime();
 //    while(timeGetTime()<start+msec) ;
@@ -20,19 +25,25 @@ Delay(int msec)
 }
 
 void 
+Blaster::DiscardBits(int n)
+{
+    while(n-- >0) ReceiveBit();
+}
+
+void 
 Blaster::TurnOn()
 {
 
-    _gal->SetVPP(0);    // VPP off
-    _gal->SetPV(0);     // P/V- low
-    _gal->SetRow(0x3F); // RA0-5 high
-    _gal->SetSDIN(1);   // SDIN high
-    _gal->SetSCLK(1);   // SCLK high
-    _gal->SetSTB(1);    // STB high
-    _gal->SetVCC(1);    // turn on VCC (if controlled)
+    SetVPP(0);    // VPP off
+    SetPV(0);     // P/V- low
+    SetRow(0x3F); // RA0-5 high
+    SetSDIN(1);   // SDIN high
+    SetSCLK(1);   // SCLK high
+    SetSTB(1);    // STB high
+    SetVCC(1);    // turn on VCC (if controlled)
     //    Delay(100);
     delayMicroseconds( 100 ); 
-    _gal->SetSCLK(0);   // SCLK low
+    SetSCLK(0);   // SCLK low
 /*
     int vpp;
     switch( _mode )
@@ -51,7 +62,7 @@ Blaster::TurnOn()
     		break;
     }
 
-	_gal->SetVPP( vpp );
+	SetVPP( vpp );
 	*/
 }
 
@@ -59,23 +70,23 @@ void
 Blaster::TurnOff()
 {
     Delay(100);
-    _gal->SetPV(0);    // P/V- low
-    _gal->SetRow(0x3F);// RA0-5 high
-    _gal->SetSDIN(1);  // SDIN high
-    _gal->SetVPP(0);   // Vpp off (+12V)
-    _gal->SetPV(1);    // P/V- high
+    SetPV(0);    // P/V- low
+    SetRow(0x3F);// RA0-5 high
+    SetSDIN(1);  // SDIN high
+    SetVPP(0);   // Vpp off (+12V)
+    SetPV(1);    // P/V- high
     Delay(2);
-    _gal->SetVCC(0);   // turn off VCC (if controlled)
+    SetVCC(0);   // turn off VCC (if controlled)
 }
 
 bool 
 Blaster::ReceiveBit( void )
 {
     bool bit;
-    bit=_gal->GetSDOUT();
-    _gal->SetSCLK(1);
+    bit=GetSDOUT();
+    SetSCLK(1);
     delayMicroseconds( 200 );
-    _gal->SetSCLK(0);
+    SetSCLK(0);
     delayMicroseconds( 200 );
     return bit;
 }
@@ -87,17 +98,17 @@ Blaster::StrobeRow( int row )
 #ifdef NOT_FOR_NOW
   // case ATF16V8B:
 
-  _gal->SetRow(row);         // set RA0-5 to row number
+  SetRow(row);         // set RA0-5 to row number
   Strobe(2);           // pulse /STB for 2ms
 #endif
 
   // case ATF22V10C:
-  _gal->SetRow(0);    // set RA0-5 low
+  SetRow(0);    // set RA0-5 low
   SendAddress(6,row); // send row number (6 bits)
-  _gal->SetSTB(0);
+  SetSTB(0);
   delayMicroseconds( 100 );
-  _gal->SetSTB(1);    // pulse /STB
-  _gal->SetSDIN(0);   // SDIN low
+  SetSTB(1);    // pulse /STB
+  SetSDIN(0);   // SDIN low
 
 }
 
@@ -105,10 +116,10 @@ Blaster::StrobeRow( int row )
 void
 Blaster::SendBit( int bit )
 {
-    _gal->SetSDIN(bit);
-    _gal->SetSCLK(1);
+    SetSDIN(bit);
+    SetSCLK(1);
     delayMicroseconds( 100 );
-    _gal->SetSCLK(0);
+    SetSCLK(0);
     delayMicroseconds( 100 );
 }
 
@@ -120,20 +131,20 @@ Blaster::SendAddress( int n, int row )
     SendBit( row & 32 );   // clock in row number bits 5-1
     row <<= 1;
   }
-  _gal->SetSDIN( row & 32 );       // SDIN = row number bit 0
+  SetSDIN( row & 32 );       // SDIN = row number bit 0
 }
 
-std::shared_ptr< Gal::FuseArray > 
+std::shared_ptr< Blaster::FuseArray > 
 Blaster::ReadGAL()
 {
-    std::shared_ptr< Gal::FuseArray > fusesPtr;
-
-    int row,bit;
-
     TurnOn();
-    _gal->SetVPP( 1 );
+    SetVPP( 1 );
 
+    std::shared_ptr< FuseArray > fusesPtr( new FuseArray( *max_element( 
+            std::begin( cfg() ), 
+            std::end( cfg() ) ) ) );
 
+    ReadFuses( *fusesPtr ) ;
 
 #ifdef NOT_FOR_NOW
     switch(gal)
@@ -176,39 +187,35 @@ Blaster::ReadGAL()
        }
     }
     case ATF16V8B:
-#endif
     	fusesPtr.reset( new Gal::FuseArray( *max_element( 
-    			std::begin( _gal->cfg() ), 
-    			std::end( _gal->cfg() ) ) ) );
+    			std::begin( cfg() ), 
+    			std::end( cfg() ) ) ) );
 
     	Gal::FuseArray& fuses = *fusesPtr;
         // read fuse rows ATF16V8
-        for ( int row = 0; row < _gal->rows(); row++ )
+        for ( int row = 0; row < rows(); row++ )
         {
            StrobeRow( row );
-           for( int bit = 0; bit < _gal->bits(); bit++ )
+           for( int bit = 0; bit < bits(); bit++ )
            {
-               fuses[ ( _gal->rows() * bit ) + row ] = ReceiveBit();
+               fuses[ ( rows() * bit ) + row ] = ReceiveBit();
            }
         }
 
         // read UES ATF16V8
-        StrobeRow( _gal->uesrow() );
+        StrobeRow( uesrow() );
         for( int bit = 0; bit < 64; bit++ )
         {
-            fuses[ _gal->uesfuse() + bit ] = ReceiveBit();
+            fuses[ uesfuse() + bit ] = ReceiveBit();
         }
 
         // read CFG ATF16V8
-        StrobeRow( _gal->cfgrow() );
+        StrobeRow( cfgrow() );
 
         for( int bit = 0; bit < 82; bit++ )
         {
-            fuses[ _gal->cfg()[ bit ] ] = ReceiveBit();
+            fuses[ cfg()[ bit ] ] = ReceiveBit();
         }
-
-#ifdef NOT_FOR_NOW
-
         break;
     case GAL22V10:
     case ATF22V10B:
@@ -260,19 +267,19 @@ void
 Blaster::Strobe( int msec )
 {
     delayMicroseconds( 2000 );
-    _gal->SetSTB(0);
+    SetSTB(0);
     //Delay(msec);
     delayMicroseconds( 2000 );
-    _gal->SetSTB(1);
+    SetSTB(1);
     delayMicroseconds( 2000 );
     //Delay(2);
 }
 
 void 
-Blaster::WriteGal( const Gal::FuseArray& fuses )
+Blaster::WriteGal( const FuseArray& fuses )
 {
     TurnOn();
-    _gal->SetVPP( 1 );
+    SetVPP( 1 );
 
 #ifdef NOT_FOR_NOW
 
@@ -325,36 +332,36 @@ Blaster::WriteGal( const Gal::FuseArray& fuses )
         case ATF16V8B:
 #endif
 
-            _gal->SetPV(1);
+            SetPV(1);
 
             // write fuse array
-            for( int row=0; row < _gal->rows(); row++ )
+            for( int row=0; row < rows(); row++ )
             {
-                _gal->SetRow( row );
-                for( int bit = 0; bit < _gal->bits(); bit++ )
+                SetRow( row );
+                for( int bit = 0; bit < bits(); bit++ )
                 {
-                    SendBit( fuses[ ( _gal->rows() * bit ) + row ] );
+                    SendBit( fuses[ ( rows() * bit ) + row ] );
                 }
-                Strobe( _gal->progtime() );
+                Strobe( progtime() );
             }
 
             // write UES
-            _gal->SetRow( _gal->uesrow() );
+            SetRow( uesrow() );
             for( int bit = 0; bit < 64; bit++ )
             {
-                SendBit( fuses[ _gal->uesfuse() + bit ] );
+                SendBit( fuses[ uesfuse() + bit ] );
             }
-            Strobe( _gal->progtime() );
+            Strobe( progtime() );
 
             // write CFG
-            _gal->SetRow( _gal->cfgrow() );
+            SetRow( cfgrow() );
             for( int bit = 0; bit < 82; bit++ )
             {
-                SendBit( fuses[ _gal->cfg()[ bit ] ] );
+                SendBit( fuses[ cfg()[ bit ] ] );
             }
-            Strobe( _gal->progtime() );
+            Strobe( progtime() );
             
-            _gal->SetPV(0);
+            SetPV(0);
 
 #ifdef NOT_FOR_NOW            
             break;
@@ -450,13 +457,13 @@ Blaster::WriteGal( const Gal::FuseArray& fuses )
 }
 
 void
-Blaster::ReadPES( Gal::PesArray& pes )
+Blaster::ReadPES( PesArray& pes )
 {
     TurnOn();
 
-    StrobeRow( _gal->pesrow() );
+    StrobeRow( pesrow() );
     delayMicroseconds( 500 );    
-    for ( int byte = 0; byte < _gal->pesbytes(); byte++ )
+    for ( int byte = 0; byte < pesbytes(); byte++ )
     {
         pes[ byte ] = 0;
         for ( int bitmask = 0x1; bitmask <= 0x80; bitmask <<= 1 )
@@ -474,12 +481,12 @@ Blaster::ReadPES( Gal::PesArray& pes )
 bool 
 Blaster::TestProperGAL()
 {
-	Gal::PesArray pes;
+	PesArray pes;
 
     ReadPES( pes );
-    if ( _gal->VerifyPesType( pes ) )
+    if ( VerifyPesType( pes ) )
     {
-    	return _gal->ParsePes( pes );
+    	return ParsePes( pes );
     }
 
     return false;

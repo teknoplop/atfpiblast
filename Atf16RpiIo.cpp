@@ -1,5 +1,8 @@
-#include "GpioAtf16.hpp"
+#include "Atf22v10cRpiIo.hpp"
+
+#ifdef __linux
 #include <wiringPi.h>
+#endif
 
 // use Broadcom GPIO PIN numbers
 const int SDIN   = 14;
@@ -18,6 +21,8 @@ const int EDIT   = 22;
 const int VCC    = 10;
 
 
+
+
 static std::vector< int > cfg16V8AB
 {
     2048,2049,2050,2051,
@@ -30,9 +35,10 @@ static std::vector< int > cfg16V8AB
 };
 
 void
-
 GpioAtf16::Init()
 {
+#ifdef __linux
+
 	wiringPiSetupGpio();
 
 	pinMode( STB,    OUTPUT );
@@ -48,7 +54,7 @@ GpioAtf16::Init()
 	pinMode( RA3,    OUTPUT );
 	pinMode( RA4,    OUTPUT );
 	pinMode( RA5,    OUTPUT );
-
+#endif
 	/*
 
 	bool v = false;
@@ -83,6 +89,7 @@ GpioAtf16::cfgbits() const
 void
 GpioAtf16::SetSTB( int state )
 {
+#ifdef __linux
   digitalWrite( STB, state );
 }
 
@@ -90,13 +97,15 @@ GpioAtf16::SetSTB( int state )
 void 
 GpioAtf16::SetPV( int state )
 {
+#ifdef __linux
   digitalWrite( PV, state );
 }
 
 void 
 GpioAtf16::SetRow( int row )
 {  
-  digitalWrite( RA0, row & 0x01 );
+ #ifdef __linux
+ digitalWrite( RA0, row & 0x01 );
   digitalWrite( RA1, row & 0x02 );
   digitalWrite( RA2, row & 0x04 );
   digitalWrite( RA3, row & 0x08 );
@@ -107,18 +116,21 @@ GpioAtf16::SetRow( int row )
 void 
 GpioAtf16::SetSDIN( int state )
 {
-  digitalWrite( SDIN, state );
+ #ifdef __linux
+ digitalWrite( SDIN, state );
 }
 
 void 
 GpioAtf16::SetSCLK( int state )
 {
+#ifdef __linux
   digitalWrite( SCLK, state );
 }
 
 bool 
 GpioAtf16::GetSDOUT()
 {
+#ifdef __linux
   return digitalRead( SDOUT ) != 0;;
 }
 

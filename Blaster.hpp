@@ -4,30 +4,49 @@
 #include <vector>
 #include <array>
 
-#include "Gal.hpp"
+#include "GalIo.hpp"
+#include "GalInfo.hpp"
 
 class Blaster
+: public GalInfo
+, public GalIo
 {
 public: 
 
-  Blaster( std::shared_ptr< Gal >& gal );
+  // Types
+  // typedef std::vector< unsigned char > FuseArray; // TODO: make array of GAL type, need to template this class
+  // typedef std::array< unsigned char, 12 > PesArray;
+  using FuseArray = std::vector< unsigned char >;
+  using PesArray  = std::array< unsigned char, 12 >;
 
-  std::shared_ptr< Gal::FuseArray > ReadGAL();
+  Blaster();
+  virtual ~Blaster() {}
+
+  std::shared_ptr< FuseArray > ReadGAL();
+
   //void WritePES( const std::vector< unsigned char >& pes );
-  void WriteGal ( const Gal::FuseArray& fuses );
+  void WriteGal ( const FuseArray& fuses );
   void SendBit( int bit );
   bool TestProperGAL();
-  void ReadPES( Gal::PesArray& pes );
-private:
+  void ReadPES( PesArray& pes );
 
+  std::shared_ptr< Blaster::FuseArray > CreateFuseArray()
+  {
+    return std::shared_ptr< Blaster::FuseArray > ( new FuseArray( fuses() ) );
+  }
+
+protected:
   void TurnOn();
   void TurnOff();
   bool ReceiveBit();
   void StrobeRow( int row );
   void Strobe( int msec );
   void SendAddress( int n, int row );
-  
-  std::shared_ptr< Gal > _gal;
+  void DiscardBits(int n);
+  void Delay( int msec );
 
+  virtual void ReadFuses( FuseArray& fuses ) = 0;
+  virtual bool VerifyPesType( PesArray& pes ) = 0;
+  virtual bool ParsePes( const PesArray& pes ) = 0;  
 };
 

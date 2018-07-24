@@ -1,19 +1,22 @@
 
 CPPFLAGS=-std=c++11 
 
-atf16blastrpi: Blaster.o GpioAtf16.o atf16blastrpi.o Jedec.o
+atf16blastrpi: Atf22v10cBlaster.o Blaster.o  atf16blastrpi.o Jedec.o Atf22v10cRpiIo.o
 	g++ -lwiringPi -o $@ $^
 
-Blaster.o : Blaster.cpp Blaster.hpp Gal.hpp
+Atf22v10cBlaster.o : Atf22v10cBlaster.cpp Atf22v10cBlaster.hpp Blaster.hpp
+	g++ -c Atf22v10cBlaster.cpp $(CPPFLAGS)
+
+Blaster.o : Blaster.cpp Blaster.hpp GalIo.hpp
 	g++ -c Blaster.cpp $(CPPFLAGS)
 
-GpioAtf16.o : GpioAtf16.cpp GpioAtf16.hpp
-	g++ -c GpioAtf16.cpp $(CPPFLAGS)
+Atf22v10cRpiIo.o : Atf22v10cRpiIo.cpp Atf22v10cRpiIo.hpp
+	g++ -c Atf22v10cRpiIo.cpp $(CPPFLAGS)
 
 Jedec.o : Jedec.cpp Jedec.hpp Blaster.hpp
 	g++ -c Jedec.cpp $(CPPFLAGS)
 
-atf16blastrpi.o : atf16blastrpi.cpp Blaster.hpp GpioAtf16.hpp Jedec.hpp
+atf16blastrpi.o : atf16blastrpi.cpp Blaster.hpp Atf22v10cRpiIo.hpp Jedec.hpp
 	g++ -c atf16blastrpi.cpp $(CPPFLAGS)
 
 

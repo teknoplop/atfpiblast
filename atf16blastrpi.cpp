@@ -3,8 +3,7 @@
 #include <iomanip>
 #include <iterator>
 
-#include "GpioAtf16.hpp"
-#include "Blaster.hpp"
+#include "Atf22v10cRpiIo.hpp"
 #include "Jedec.hpp"
 
 // http://www.armory.com/~rstevew/Public/Pgmrs/GAL/algo.htm
@@ -17,25 +16,21 @@ main( int argc, char** arc)
 
 		try 
 		{
+			Atf22v10cRpiIo b;
 
-			GpioAtf16::Init();
-
-			std::shared_ptr< Gal > g ( new GpioAtf16() );
-			Blaster b ( g );
-
-			Gal::PesArray pes;
+			Blaster::PesArray pes;
 			b.ReadPES( pes );
 
 			std::cout << "PES: ";
 
-			for ( int i = 0; i < g->pesbytes(); ++i )
+			for ( int i = 0; i < b.pesbytes(); ++i )
 			{
 			  std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)pes[ i ] << " ";
-		        }
+		    }
 			std::cout << std::endl;
 
 			std::cout << "     ";
-			for ( int i = 0; i < g->pesbytes(); ++i )
+			for ( int i = 0; i < b.pesbytes(); ++i )
 			{
 			  std::cout << " " << ( std::isprint( pes [ i ] ) ? static_cast< char >( pes[ i ] ) : '.' ) << " ";
 			}

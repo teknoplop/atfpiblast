@@ -8,42 +8,42 @@
 
 #include <stdio.h>
 
-std::shared_ptr< Gal::FuseArray >
-Jedec::Load( const std::string& filename, const std::shared_ptr< Gal >& gal )
+std::shared_ptr< Blaster::FuseArray >
+Jedec::Load( const std::string& filename, const std::shared_ptr< Blaster >& gal )
 {
 
-	auto fuses = gal->CreateFuseArray();
+  auto fuses = gal->CreateFuseArray();
 
-	std::cout << "fuseMap size: " << fuses->size() << std::endl;
+  std::cout << "fuseMap size: " << fuses->size() << std::endl;
 
-    std::ifstream ifs( filename );
- 
-    if ( !ifs ) 
-    {
-		throw std::runtime_error("Cannot open Jedec file");
-    }
+  std::ifstream ifs( filename );
 
-    std::string jedecText;
-	jedecText.assign( ( std::istreambuf_iterator<char>( ifs ) ), std::istreambuf_iterator<char>() );
+  if ( !ifs ) 
+  {
+    throw std::runtime_error("Cannot open Jedec file");
+  }
 
-	std::cout << "Parsing Jedec length: " << jedecText.length() << std::endl;
+  std::string jedecText;
+  jedecText.assign( ( std::istreambuf_iterator<char>( ifs ) ), std::istreambuf_iterator<char>() );
+
+  std::cout << "Parsing Jedec length: " << jedecText.length() << std::endl;
 
 
-    int position = Parse( jedecText, fuses );
-	
-    std::cout << "Position: " << position << std::endl;
+  int position = Parse( jedecText, fuses );
 
-	if ( position != jedecText.length() )
-	{
-		throw std::runtime_error("Jedec file not parsed to end");
-	}
+  std::cout << "Position: " << position << std::endl;
 
-	return fuses;
+  if ( position != jedecText.length() )
+  {
+    throw std::runtime_error("Jedec file not parsed to end");
+  }
+
+  return fuses;
 
 }
 
 void 
-Jedec::Format( const std::shared_ptr< Gal >& gal, const std::shared_ptr< Gal::FuseArray >& fuses, std::ostream& ostr )
+Jedec::Format( const std::shared_ptr< Blaster >& gal, const std::shared_ptr< Blaster::FuseArray >& fuses, std::ostream& ostr )
 {
 #ifdef NOT_FOR_NOW
 
@@ -137,7 +137,7 @@ Jedec::Format( const std::shared_ptr< Gal >& gal, const std::shared_ptr< Gal::Fu
 
 // TODO: exception instead of return n
 int
-Jedec::Parse( const std::string& ptr, std::shared_ptr< Gal::FuseArray >& fusemapptr )
+Jedec::Parse( const std::string& ptr, std::shared_ptr< Blaster::FuseArray >& fusemapptr )
 {
 	int security = 0;
 	unsigned short checksum;
@@ -155,7 +155,7 @@ Jedec::Parse( const std::string& ptr, std::shared_ptr< Gal::FuseArray >& fusemap
     pins=0;
     lastfuse=0;
 
-    Gal::FuseArray& fusemap = *fusemapptr;
+    Blaster::FuseArray& fusemap = *fusemapptr;
 
     for(n=0;ptr[n];n++)
     {
@@ -380,7 +380,7 @@ Jedec::Parse( const std::string& ptr, std::shared_ptr< Gal::FuseArray >& fusemap
 
 
 unsigned short 
-Jedec::CheckSum(int n, const Gal::FuseArray& fusemap)
+Jedec::CheckSum(int n, const Blaster::FuseArray& fusemap)
 {
     unsigned short c,e;
     long a;

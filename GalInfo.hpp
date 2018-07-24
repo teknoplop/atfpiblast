@@ -4,8 +4,6 @@ class GalInfo
 {
 public:
     virtual ~GalInfo() { }
-    virtual void test() = 0;
-
 
 	virtual int fuses() const = 0;
 	virtual int pins() const  = 0;
@@ -21,4 +19,5 @@ public:
 	virtual int cfgrow() const = 0;
 	virtual const std::vector< int >& cfg() const = 0;
 	virtual int cfgbits() const = 0;
+	virtual int progtime() const = 0;
 };

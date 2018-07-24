@@ -1,7 +1,6 @@
 #pragma once
 
-
-#include "GalIo.hpp"
+#include "Atf22v10cBlaster.hpp"
 
 // Abstact the RPI GPIO to GalBlast i/f
 // comments on GalBlast Parallel port pin mappings
@@ -10,10 +9,15 @@
 
 
 
-class GpioAtf16
-: public GalIo
+class Atf22v10cRpiIo
+: public Atf22v10cBlaster
 {
 public:
+
+	Atf22v10cRpiIo();
+	virtual ~Atf22v10cRpiIo();
+
+	// GalIo
     void SetSTB( int state ); // STROBE/P1/CTRL0
 	void SetVPP( int state ) { } // N/C (FEED/P14/CTRL1?)
     void SetVCC( int state ) { } // N/C  (INIT/P16/CTRL3?)
