@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "Blaster.hpp"
 
 class Atf22v10cBlaster :
@@ -10,6 +11,8 @@ public:
 	virtual ~Atf22v10cBlaster();
 
 	// GalInfo
+    const std::string& name() const;
+
 	unsigned char id0() const { return 0x00; } // variant 1, variant 2 (eg. 16V8=0x00, 16V8A+=0x1A)
 	unsigned char id1() const { return 0x00; }
 

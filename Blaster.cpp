@@ -137,127 +137,14 @@ Blaster::SendAddress( int n, int row )
 std::shared_ptr< Blaster::FuseArray > 
 Blaster::ReadGAL()
 {
-    TurnOn();
-    SetVPP( 1 );
-
+    // TODO: create helper function
     std::shared_ptr< FuseArray > fusesPtr( new FuseArray( *max_element( 
             std::begin( cfg() ), 
             std::end( cfg() ) ) ) );
 
+    TurnOn();
+    SetVPP( 1 );
     ReadFuses( *fusesPtr ) ;
-
-#ifdef NOT_FOR_NOW
-    switch(gal)
-    {
-    case GAL16V8:
-    case GAL20V8:
-    // read fuse rows
-    for(row=0;row<galinfo[gal].rows;row++)
-    {
-       StrobeRow(row);
-       for(bit=0;bit<galinfo[gal].bits;bit++)
-       {
-      fuses[galinfo[gal].rows*bit+row]=ReceiveBit();
-       }
-    }
-    // read UES
-    StrobeRow(galinfo[gal].uesrow);
-    for(bit=0;bit<64;bit++)
-    {
-       fuses[galinfo[gal].uesfuse+bit]=ReceiveBit();
-    }
-    // read CFG
-    StrobeRow(galinfo[gal].cfgrow);
-    for(bit=0;bit<82;bit++)
-    {
-       switch(pes[2])
-       {
-       case 0x00:
-           fuses[cfg16V8[bit]]=ReceiveBit();
-           break;
-       case 0x1A:
-           fuses[cfg16V8AB[bit]]=ReceiveBit();
-           break;
-       case 0x20:
-           fuses[cfg20V8[bit]]=ReceiveBit();
-           break;
-       case 0x3A:
-           fuses[cfg20V8AB[bit]]=ReceiveBit();
-           break;
-       }
-    }
-    case ATF16V8B:
-    	fusesPtr.reset( new Gal::FuseArray( *max_element( 
-    			std::begin( cfg() ), 
-    			std::end( cfg() ) ) ) );
-
-    	Gal::FuseArray& fuses = *fusesPtr;
-        // read fuse rows ATF16V8
-        for ( int row = 0; row < rows(); row++ )
-        {
-           StrobeRow( row );
-           for( int bit = 0; bit < bits(); bit++ )
-           {
-               fuses[ ( rows() * bit ) + row ] = ReceiveBit();
-           }
-        }
-
-        // read UES ATF16V8
-        StrobeRow( uesrow() );
-        for( int bit = 0; bit < 64; bit++ )
-        {
-            fuses[ uesfuse() + bit ] = ReceiveBit();
-        }
-
-        // read CFG ATF16V8
-        StrobeRow( cfgrow() );
-
-        for( int bit = 0; bit < 82; bit++ )
-        {
-            fuses[ cfg()[ bit ] ] = ReceiveBit();
-        }
-        break;
-    case GAL22V10:
-    case ATF22V10B:
-    case ATF22V10C:
-        // read fuse rows
-        for(row=0;row<galinfo[gal].rows;row++)
-        {
-           StrobeRow(row);
-           for(bit=0;bit<galinfo[gal].bits;bit++)
-           {
-               fuses[galinfo[gal].rows*bit+row]=ReceiveBit();
-           }
-        Delay(1);
-        }
-        // read UES
-        StrobeRow(galinfo[gal].uesrow);
-        if (gal==GAL22V10)
-        {
-            for(bit=0;bit<64;bit++)
-            {
-                fuses[galinfo[gal].uesfuse+bit]=ReceiveBit();
-            }
-        }
-        else // ATF22V10x
-        {
-            DiscardBits(68);
-            for(bit=0;bit<64;bit++)
-            {
-                fuses[galinfo[gal].uesfuse+bit]=ReceiveBit();
-            }
-        }
-        Delay(1);
-        // read CFG
-        SetRow(galinfo[gal].cfgrow);
-        Strobe(1);
-        for(bit=0;bit<galinfo[gal].cfgbits;bit++)
-        {
-            fuses[galinfo[gal].cfg[bit]]=ReceiveBit();
-        }
-    }
-#endif
-
     TurnOff();
 
     return fusesPtr;
@@ -268,11 +155,9 @@ Blaster::Strobe( int msec )
 {
     delayMicroseconds( 2000 );
     SetSTB(0);
-    //Delay(msec);
     delayMicroseconds( 2000 );
     SetSTB(1);
     delayMicroseconds( 2000 );
-    //Delay(2);
 }
 
 void 

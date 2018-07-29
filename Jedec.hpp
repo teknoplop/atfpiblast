@@ -7,8 +7,9 @@
 class Jedec
 {
 public:
-	static void Format( const std::shared_ptr< Blaster >& gal, 
-		const std::shared_ptr< Blaster::FuseArray >& fuses,
+	static void Format( const Blaster& gal, 
+		const Blaster::FuseArray& fuses,
+		const Blaster::PesArray& pes,
 		std::ostream& ostr );
 
 	static int Parse( const std::string& jedecText, std::shared_ptr< Blaster::FuseArray >& fuses );
@@ -17,6 +18,6 @@ public:
 	static std::shared_ptr< Blaster::FuseArray > Load( const std::string& filename, const std::shared_ptr< Blaster >& gal );
 
 protected: 
-	static unsigned short CheckSum(int n, const Blaster::FuseArray& fusemap);
+	static unsigned short CheckSum( const Blaster::FuseArray& fusemap, int n );
 
 };

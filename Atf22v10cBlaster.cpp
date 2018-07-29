@@ -65,6 +65,16 @@ Atf22v10cBlaster::cfg() const
 	return cfg22V10;
 }
 
+static std::string galName = "ATF22V10C";
+
+const std::string& 
+Atf22v10cBlaster::name() const
+{
+
+    return galName;
+}
+
+
 int
 Atf22v10cBlaster::cfgbits() const
 {

@@ -20,6 +20,7 @@ const int PV     = 4;
 const int EDIT   = 22;
 const int VCC    = 10;
 
+
 Atf22v10cRpiIo::Atf22v10cRpiIo()
 {
 
@@ -109,4 +110,5 @@ Atf22v10cRpiIo::GetSDOUT()
   return false;
 #endif
 }
+
 

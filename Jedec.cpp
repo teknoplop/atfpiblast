@@ -43,95 +43,122 @@ Jedec::Load( const std::string& filename, const std::shared_ptr< Blaster >& gal 
 }
 
 void 
-Jedec::Format( const std::shared_ptr< Blaster >& gal, const std::shared_ptr< Blaster::FuseArray >& fuses, std::ostream& ostr )
+Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaster::PesArray& pes, std::ostream& ostr )
 {
-#ifdef NOT_FOR_NOW
-
     int i,j,k,n;
-    int unused,start;
+    bool unused,start;
     time_t now;
     unsigned char ch;
+    char buffer[16384];
 
-    time(&now);
-    n=wsprintf(buffer,"JEDEC file for %s created on %s",(LPSTR)galinfo[gal].name,(LPSTR)asctime(localtime(&now)))-1;
-    n+=wsprintf(buffer+n,"\r\n*QP%d*QF%d*QV0*F0*G0*X0*\r\n",galinfo[gal].pins,galinfo[gal].fuses);
-    for(i=k=0;i<galinfo[gal].bits;i++)
+    time( &now );
+    n = sprintf( buffer, "JEDEC file for %s created on %s", gal.name().c_str(), asctime( localtime( &now ) ) ) - 1;
+    n += sprintf( buffer + n, "\r\n*QP%d*QF%d*QV0*F0*G0*X0*\r\n", gal.pins(), gal.fuses()) ;
+    for( i = k = 0; i < gal.bits(); i++ )
     {
-        start=n;
-        unused=TRUE;
-        n+=wsprintf(buffer+n,"L%04d ",k);
-        for(j=0;j<galinfo[gal].rows;j++)
+        start = n;
+        unused = true;
+        n += sprintf( buffer + n, "L%04d ", k );
+        for( j = 0; j < gal.rows(); j++ )
         {
-            if(fuses[k]) unused=FALSE;
-            buffer[n++]='0'+fuses[k++];
-        }
-        n+=wsprintf(buffer+n,"*\r\n");
-        if(unused) n=start;
-    }
-    if(k<galinfo[gal].uesfuse)
-    {
-        start=n;
-        unused=TRUE;
-        n+=wsprintf(buffer+n,"L%04d ",k);
-        while(k<galinfo[gal].uesfuse)
-        {
-             if(fuses[k]) unused=FALSE;
-             buffer[n++]='0'+fuses[k++];
-        }
-        n+=wsprintf(buffer+n,"*\r\n");
-        if(unused) n=start;
-    }
-    start=n;
-    unused=TRUE;
-    n+=wsprintf(buffer+n,"N UES");
-    for(j=0;j<galinfo[gal].uesbytes;j++)
-    {
-        ch=0;
-        for(i=0;i<8;i++)
-        {
-            if(fuses[k+8*j+i])
+            if ( fuses[ k ] ) 
             {
-                if (gal==ATF22V10C)
+              unused = false;
+            }
+
+            buffer[ n++ ] = '0' + fuses[ k++ ];
+        }
+        n += sprintf( buffer+n, "*\r\n" );
+        if( unused ) 
+        {
+          n = start;
+        }
+    }
+    if( k < gal.uesfuse() )
+    {
+        start = n;
+        unused = true;
+        n += sprintf( buffer + n, "L%04d ", k );
+        while( k < gal.uesfuse() )
+        {
+             if ( fuses[ k ] )
+             {
+               unused = false;
+             }
+             buffer[ n++ ] = '0' + fuses[ k++ ];
+        }
+        n += sprintf( buffer + n, "*\r\n");
+        if ( unused ) 
+        {
+          n=start;
+        }
+    }
+    start = n;
+    unused = true;
+    n += sprintf( buffer + n, "N UES" );
+    for( j = 0; j < gal.uesbytes(); j++ )
+    {
+        ch = 0 ;
+        for( i = 0; i < 8; i++ )
+        {
+            if( fuses[ k + 8 * j + i ] )
+            {
+                // TODO: do this function in the concrete class, or return endianess
+                if (gal.name() == "ATF22V10C")
                 {
-                    ch|=1<<(7-i);  // big-endian
+                    ch |= 1 << ( 7 - i );  // big-endian
                 }
                 else
                 {
-                    ch|=1<<i;     // little-endian
+                    ch |= 1 << i;     // little-endian
                 }
             }
         }
-        n+=wsprintf(buffer+n," %02X",ch);
+        n += sprintf( buffer + n, " %02X", ch );
     }
-    n+=wsprintf(buffer+n,"*\r\nL%04d ",k);
-    for(j=0;j<8*galinfo[gal].uesbytes;j++)
+    n += sprintf( buffer + n, "*\r\nL%04d ", k );
+    for ( j = 0; j < 8 * gal.uesbytes(); j++ )
     {
-        if(fuses[k]) unused=FALSE;
-        buffer[n++]='0'+fuses[k++];
+        if ( fuses[ k ] )
+        {
+          unused = false;
+        }
+        buffer[ n++ ] = '0' + fuses[ k++ ];
     }
-    n+=wsprintf(buffer+n,"*\r\n");
-    if(unused) n=start;
-    if(k<galinfo[gal].fuses)
+    n += sprintf( buffer + n, "*\r\n" );
+    if ( unused )
     {
-       start=n;
-       unused=TRUE;
-       n+=wsprintf(buffer+n,"L%04d ",k);
-       while(k<galinfo[gal].fuses)
+      n = start;
+    }
+    if( k < gal.fuses() )
+    {
+       start = n;
+       unused = true;
+       n += sprintf( buffer + n, "L%04d ", k );
+       while( k < gal.fuses() )
        {
-            if(fuses[k]) unused=FALSE;
-            buffer[n++]='0'+fuses[k++];
+            if ( fuses[ k ] ) 
+            {
+              unused = false;
+            }
+            buffer[ n++ ] = '0' + fuses[ k++ ];
        }
-       n+=wsprintf(buffer+n,"*\r\n");
-       if(unused) n=start;
+       n += sprintf( buffer + n, "*\r\n" );
+       if ( unused )
+       {
+         n = start;
+       }
     }
-    n+=wsprintf(buffer+n,"N PES");
-    for(i=0;i<galinfo[gal].pesbytes;i++)
+    n += sprintf( buffer + n,"N PES" );
+    for ( i = 0 ;i < gal.pesbytes(); i++ )
     {
-        n+=wsprintf(buffer+n," %02X",pes[i]);
+        n += sprintf( buffer + n, " %02X", pes[ i ] );
     }
-    n+=wsprintf(buffer+n,"*\r\nC%04X\r\n*",CheckSum(galinfo[gal].fuses));
-    buffer[n]='\0';
-#endif
+    n += sprintf( buffer + n, "*\r\nC%04X\r\n*", CheckSum( fuses, gal.fuses() ) );
+    buffer[ n ] = '\0';
+
+    ostr << buffer;
+
 }
 
 
@@ -333,7 +360,7 @@ Jedec::Parse( const std::string& ptr, std::shared_ptr< Blaster::FuseArray >& fus
 
         if(checksum)
        	{
-       		auto ck = CheckSum(lastfuse, fusemap);
+       		auto ck = CheckSum( fusemap, lastfuse );
 
 	        if ( checksum!=ck)
 	        {
@@ -380,7 +407,7 @@ Jedec::Parse( const std::string& ptr, std::shared_ptr< Blaster::FuseArray >& fus
 
 
 unsigned short 
-Jedec::CheckSum(int n, const Blaster::FuseArray& fusemap)
+Jedec::CheckSum( const Blaster::FuseArray& fusemap, int n )
 {
     unsigned short c,e;
     long a;

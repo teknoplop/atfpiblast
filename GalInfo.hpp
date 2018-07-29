@@ -5,6 +5,7 @@ class GalInfo
 public:
     virtual ~GalInfo() { }
 
+    virtual const std::string& name() const = 0;
 	virtual int fuses() const = 0;
 	virtual int pins() const  = 0;
 	virtual int rows() const  = 0;

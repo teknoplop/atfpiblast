@@ -39,6 +39,12 @@ main( int argc, char** arc)
 			//std::copy(pes.begin(), pes.end(), std::ostream_iterator<int>(std::cout));
 			std::cout << std::endl << std::endl;
 
+// READ
+//#ifdef IMPL_GAL_READ
+		auto fuses = b.ReadGAL();
+		Jedec::Format( b, *fuses, pes,  std::cout ); // read fuse rows, UES, cfg.
+//#endif
+
 
 /* Verify
         if(!CheckJEDEC(wnd)) return TRUE;
@@ -88,11 +94,7 @@ main( int argc, char** arc)
         }
 */
 
-// READ
-#ifdef IMPL_GAL_READ
-		auto fuseMap = b.ReadGAL();           // read fuse rows, UES, cfg.
-		Jedec::Format( g, fuseMap, std::cout );
-#endif
+
 
     	}
     	catch( const std::runtime_error& ex )

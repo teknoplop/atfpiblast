@@ -44,7 +44,7 @@ GpioAtf16::Init()
 	pinMode( STB,    OUTPUT );
 	pinMode( SDOUT,   INPUT );
 	pinMode( SCLK,   OUTPUT );
-        pinMode( SDIN,   OUTPUT );
+    pinMode( SDIN,   OUTPUT );
 	pinMode( PV,     OUTPUT );
 	pinMode( EDIT,   OUTPUT );
 	pinMode( VCC,    OUTPUT );
