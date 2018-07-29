@@ -17,6 +17,7 @@ main( int argc, char** arc)
 		try 
 		{
 			Atf22v10cRpiIo b;
+			b.Init();
 
 			Blaster::PesArray pes;
 			b.ReadPES( pes );
@@ -43,6 +44,7 @@ main( int argc, char** arc)
 //#ifdef IMPL_GAL_READ
 		auto fuses = b.ReadGAL();
 		Jedec::Format( b, *fuses, pes,  std::cout ); // read fuse rows, UES, cfg.
+		std::cout <<  std::flush;
 //#endif
 
 

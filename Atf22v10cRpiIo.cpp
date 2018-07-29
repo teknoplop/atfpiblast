@@ -1,4 +1,5 @@
 #include "Atf22v10cRpiIo.hpp"
+ #include <iostream>
 
 #ifdef __linux
 #include <wiringPi.h>
@@ -35,8 +36,10 @@ void
 Atf22v10cRpiIo::Init()
 {
 #ifdef __linux
-
+	std::cout << "init" << std::endl;
 	wiringPiSetupGpio();
+
+
 
 	pinMode( STB,    OUTPUT );
 	pinMode( SDOUT,   INPUT );

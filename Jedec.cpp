@@ -54,6 +54,7 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
     time( &now );
     n = sprintf( buffer, "JEDEC file for %s created on %s", gal.name().c_str(), asctime( localtime( &now ) ) ) - 1;
     n += sprintf( buffer + n, "\r\n*QP%d*QF%d*QV0*F0*G0*X0*\r\n", gal.pins(), gal.fuses()) ;
+
     for( i = k = 0; i < gal.bits(); i++ )
     {
         start = n;

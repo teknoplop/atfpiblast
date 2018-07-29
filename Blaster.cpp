@@ -3,11 +3,12 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include <iostream>
 //#include <wiringPi.h>
 
-void delayMicroseconds( int us )
+void delayMicroseconds( int usec )
 {
-
+    std::this_thread::sleep_for(std::chrono::microseconds( usec ));
 }
 
 Blaster::Blaster()
@@ -138,9 +139,7 @@ std::shared_ptr< Blaster::FuseArray >
 Blaster::ReadGAL()
 {
     // TODO: create helper function
-    std::shared_ptr< FuseArray > fusesPtr( new FuseArray( *max_element( 
-            std::begin( cfg() ), 
-            std::end( cfg() ) ) ) );
+    std::shared_ptr< FuseArray > fusesPtr( new FuseArray( fuses() ) );
 
     TurnOn();
     SetVPP( 1 );
