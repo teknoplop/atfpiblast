@@ -30,7 +30,7 @@ public:
   bool TestProperGAL();
   void ReadPES( PesArray& pes );
 
-  std::shared_ptr< Blaster::FuseArray > CreateFuseArray()
+  std::shared_ptr< Blaster::FuseArray > CreateFuseArray() const
   {
     return std::shared_ptr< Blaster::FuseArray > ( new FuseArray( fuses() ) );
   }

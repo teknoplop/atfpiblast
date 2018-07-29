@@ -9,10 +9,10 @@
 #include <stdio.h>
 
 std::shared_ptr< Blaster::FuseArray >
-Jedec::Load( const std::string& filename, const std::shared_ptr< Blaster >& gal )
+Jedec::Load( const std::string& filename, const Blaster& gal )
 {
 
-  auto fuses = gal->CreateFuseArray();
+  auto fuses = gal.CreateFuseArray();
 
   std::cout << "fuseMap size: " << fuses->size() << std::endl;
 

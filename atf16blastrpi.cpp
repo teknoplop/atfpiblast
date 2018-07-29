@@ -9,7 +9,7 @@
 // http://www.armory.com/~rstevew/Public/Pgmrs/GAL/algo.htm
 
 int 
-main( int argc, char** arc)
+main( int argc, char** argv )
 {
 	std::cout << "Raspberry Pi ATF16V8B Blaster" << std::endl;
 	std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl << std::endl;
@@ -78,8 +78,11 @@ main( int argc, char** arc)
         if(!CheckJEDEC(wnd)) return TRUE;
         if(!TestProperGAL(wnd)) return TRUE;*/
 
-#ifdef IMPL_GAL_WRITE
-			auto fuseMap = Jedec::Load( "/Users/sam/JSMOTOR.jed", g );
+
+		if ( argc > 1 )
+		{
+			//  "/Users/sam/JSMOTOR.jed"
+			auto fuseMap = Jedec::Load( argv[ 1 ], b );
 
 			if ( !b.TestProperGAL() )
 			{
@@ -87,7 +90,7 @@ main( int argc, char** arc)
 			} 
 	        
 	        b.WriteGal( *fuseMap );
-#endif
+	    }
 
  /*       if(security)
         {
