@@ -27,6 +27,7 @@ public:
   //void WritePES( const std::vector< unsigned char >& pes );
   void WriteGal ( const FuseArray& fuses );
   void SendBit( int bit );
+  void SendBits( int n, int bit );
   bool TestProperGAL();
   void ReadPES( PesArray& pes );
 
@@ -48,5 +49,6 @@ protected:
   virtual void ReadFuses( FuseArray& fuses ) = 0;
   virtual bool VerifyPesType( PesArray& pes ) = 0;
   virtual bool ParsePes( const PesArray& pes ) = 0;  
+  virtual void WriteFuses( const FuseArray& fuses ) = 0;  
 };
 

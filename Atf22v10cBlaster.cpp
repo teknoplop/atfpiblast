@@ -105,3 +105,51 @@ Atf22v10cBlaster::ParsePes( const PesArray& pes )
 {
     return true;
 }
+
+ void 
+ Atf22v10cBlaster::WriteFuses( const FuseArray& fuses )
+ {
+	SetRow( 0 ); // RA0-5 low
+	for( int row = 0; row < rows(); row++)
+	{
+		for( int bit = 0; bit < bits(); bit++ )
+		{
+			SendBit( fuses[ rows() * bit + row ] );
+		}
+		SendAddress( 6, row );  // send address 6 bits
+		SetPV( 1 );
+		Strobe( progtime() );
+		SetPV( 0 );
+	}
+
+	// write UES
+	SendBits( 68, 1 );
+	for( int bit = 0; bit < 64; bit++ )
+	{
+		SendBit( fuses[ uesfuse() + bit ] );
+	}
+	SendAddress( 6, uesrow() );
+	SetPV( 1 );
+	Strobe( progtime() );
+	SetPV( 0 );
+
+	// write CFG
+	SetRow( cfgrow() );
+	for( int bit = 0; bit < 19; bit++ )
+	{
+		SendBit( fuses[ cfg()[ bit ] ] ); // clock out bits 0-62
+	}
+	SetSDIN( fuses[ cfg()[19] ] ); // send bit 63
+	SetPV( 1 );
+	Strobe( progtime() );
+	SetPV( 0 );
+
+	// disable power-down feature (JEDEC bit #5892)
+	SetRow( 0 );
+	SendAddress( 6, 59 );
+	SetPV( 1 );
+	Strobe( progtime() );
+	SetPV( 0 );
+ }
+
+

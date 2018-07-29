@@ -40,4 +40,5 @@ public:
     bool VerifyPesType( PesArray& pes );
     bool ParsePes( const PesArray& pes );
   	void ReadFuses( FuseArray& fuses );
+   	void WriteFuses( const FuseArray& fuses );  
 };

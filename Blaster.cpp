@@ -11,6 +11,13 @@ void delayMicroseconds( int usec )
     std::this_thread::sleep_for(std::chrono::microseconds( usec ));
 }
 
+
+void delayMilliseconds( int msec )
+{
+    std::this_thread::sleep_for(std::chrono::microseconds( msec ));
+}
+
+
 Blaster::Blaster()
 {
 
@@ -124,6 +131,15 @@ Blaster::SendBit( int bit )
     delayMicroseconds( 100 );
 }
 
+void 
+Blaster::SendBits( int n, int bit )
+{
+    while(n-- >0) 
+    {
+        SendBit(bit);
+    }
+}
+
 void
 Blaster::SendAddress( int n, int row )
 {
@@ -154,7 +170,7 @@ Blaster::Strobe( int msec )
 {
     delayMicroseconds( 2000 );
     SetSTB(0);
-    delayMicroseconds( 2000 );
+    delayMilliseconds( msec );
     SetSTB(1);
     delayMicroseconds( 2000 );
 }
@@ -164,6 +180,8 @@ Blaster::WriteGal( const FuseArray& fuses )
 {
     TurnOn();
     SetVPP( 1 );
+
+    WriteFuses( fuses );
 
 #ifdef NOT_FOR_NOW
 
@@ -214,7 +232,7 @@ Blaster::WriteGal( const FuseArray& fuses )
             SetPV(0);
             break;
         case ATF16V8B:
-#endif
+
 
             SetPV(1);
 
@@ -247,7 +265,7 @@ Blaster::WriteGal( const FuseArray& fuses )
             
             SetPV(0);
 
-#ifdef NOT_FOR_NOW            
+            
             break;
         case GAL22V10:
         case ATF22V10B:
