@@ -10,4 +10,4 @@ Raspberry Pi based programmer for Micropchip/Atmel GALs (ATF16V8B/ATF22V10C). Th
 - http://www.css-electronics.8u.cz/hobby/elektronika/galblast2012.html
 - http://elm-chan.org/works/pgal/pgal_e.png
 - http://k1.spdns.de/Develop/Projects/GalAsm/info/galer/jedecfile.html
-
+- https://github.com/daveho/GALasm/blob/master/galer/gal22v10.html
