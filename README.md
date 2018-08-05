@@ -13,4 +13,4 @@ Raspberry Pi based programmer for Micropchip/Atmel GALs (ATF16V8B/ATF22V10C). Th
 - https://github.com/daveho/GALasm/blob/master/galer/gal22v10.html
 - http://forum.6502.org/viewtopic.php?t=1682 (C:\Wincupl\WinCupl\AtmelHlp\Devhelp.pdf)
 - http://paul.de/tips/sr-ff-in-gal.htm
-
+- http://www.gradllc.com/pld.htm
