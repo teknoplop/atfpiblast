@@ -1,6 +1,6 @@
 # atfpiblast
 
-Raspberry Pi based programmer for Micropchip/Atmel GALs (ATF16V8B/ATF22V10C). This is a refactor of the GALBlast PC parallel printer port programmer to use RPI GPIO pins directly. Usefuly links:
+Raspberry Pi based programmer for Micropchip/Atmel GALs (ATF16V8B/ATF22V10C). This is a refactor of the GALBlast PC parallel printer port programmer to use RPI GPIO pins directly. Useful links:
 
 - http://www.armory.com/~rstevew/Public/Pgmrs/GAL/_ClikMe1st.htm
 - http://www.bhabbott.net.nz/atfblast.html

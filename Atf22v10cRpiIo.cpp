@@ -10,12 +10,12 @@ const int SDIN   = 14;
 const int STB    = 2;
 const int SCLK   = 3;
 const int SDOUT  = 17;
-const int RA0    = 8;
-const int RA1    = 15;
-const int RA2    = 18;
-const int RA3    = 23;
-const int RA4    = 24;
-const int RA5    = 25;
+const int RA0    = 8;  // 8;
+const int RA1    = 25; // 15;
+const int RA2    = 24; // 18;
+const int RA3    = 23; // 23;
+const int RA4    = 18; // 24;
+const int RA5    = 15; // 25;
 
 const int PV     = 4;
 const int EDIT   = 22;
@@ -79,7 +79,7 @@ void
 Atf22v10cRpiIo::SetRow( int row )
 {  
  #ifdef __linux
- digitalWrite( RA0, row & 0x01 );
+  digitalWrite( RA0, row & 0x01 );
   digitalWrite( RA1, row & 0x02 );
   digitalWrite( RA2, row & 0x04 );
   digitalWrite( RA3, row & 0x08 );

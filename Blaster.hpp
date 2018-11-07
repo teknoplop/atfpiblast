@@ -30,6 +30,7 @@ public:
   void SendBits( int n, int bit );
   bool TestProperGAL();
   void ReadPES( PesArray& pes );
+  void Erase();
 
   std::shared_ptr< Blaster::FuseArray > CreateFuseArray() const
   {
@@ -50,5 +51,6 @@ protected:
   virtual bool VerifyPesType( PesArray& pes ) = 0;
   virtual bool ParsePes( const PesArray& pes ) = 0;  
   virtual void WriteFuses( const FuseArray& fuses ) = 0;  
+  virtual void SendEraseBit() = 0;
 };
 

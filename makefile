@@ -1,8 +1,8 @@
 
-CPPFLAGS=-std=c++11 
+CPPFLAGS=-std=c++11 -g
 
 atf16blastrpi: Atf22v10cBlaster.o Blaster.o  atf16blastrpi.o Jedec.o Atf22v10cRpiIo.o
-	g++ -lwiringPi -o $@ $^
+	g++ -g -lwiringPi -o $@ $^
 
 Atf22v10cBlaster.o : Atf22v10cBlaster.cpp Atf22v10cBlaster.hpp Blaster.hpp
 	g++ -c Atf22v10cBlaster.cpp $(CPPFLAGS)

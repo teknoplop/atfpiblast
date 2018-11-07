@@ -23,7 +23,7 @@ public:
 	int uesrow() const      { return 44; }
 	int uesfuse() const     { return 5828; }
 	int uesbytes() const    { return 8; }
-	int eraserow() const    { return 61; }
+	int eraserow() const    { return 0x3f; /* 61; (*/ }
 	int eraseallrow() const { return 60; }
 	int pesrow() const      { return 58; }
 	int pesbytes() const    { return 10; }
@@ -32,8 +32,8 @@ public:
 	const std::vector< int >& cfg() const;
 	int cfgbits() const;
 
-    int progtime() const { return 10; }
-    int erasetime() const { return 100; }
+    int progtime() const { return 5; }
+    int erasetime() const { return 10; }
     int vpp() const { return 48; } // 12.0V
 
 
@@ -41,4 +41,5 @@ public:
     bool ParsePes( const PesArray& pes );
   	void ReadFuses( FuseArray& fuses );
    	void WriteFuses( const FuseArray& fuses );  
+   	virtual void SendEraseBit() { /* SendBit(1); */}
 };

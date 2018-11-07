@@ -14,7 +14,7 @@ void delayMicroseconds( int usec )
 
 void delayMilliseconds( int msec )
 {
-    std::this_thread::sleep_for(std::chrono::microseconds( msec ));
+    std::this_thread::sleep_for(std::chrono::milliseconds( msec ));
 }
 
 
@@ -91,7 +91,7 @@ bool
 Blaster::ReceiveBit( void )
 {
     bool bit;
-    bit=GetSDOUT();
+    bit=GetSDOUT();    
     SetSCLK(1);
     delayMicroseconds( 200 );
     SetSCLK(0);
@@ -129,6 +129,8 @@ Blaster::SendBit( int bit )
     delayMicroseconds( 100 );
     SetSCLK(0);
     delayMicroseconds( 100 );
+
+    //std::cout << "bit: " << bit << std::endl;
 }
 
 void 
@@ -173,6 +175,21 @@ Blaster::Strobe( int msec )
     delayMilliseconds( msec );
     SetSTB(1);
     delayMicroseconds( 2000 );
+}
+
+
+void 
+Blaster::Erase()
+{
+    std::cout << "Erasing" << std::endl;
+    TurnOn();
+    SetVPP( 1 );
+    SetPV( 1 );
+    SetRow( eraserow() );
+    SendEraseBit();
+    Strobe( erasetime() );
+    SetPV( 0 );
+    TurnOff();
 }
 
 void 

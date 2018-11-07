@@ -21,4 +21,6 @@ public:
 	virtual const std::vector< int >& cfg() const = 0;
 	virtual int cfgbits() const = 0;
 	virtual int progtime() const = 0;
+	virtual int erasetime() const = 0;
+
 };

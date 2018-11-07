@@ -19,34 +19,36 @@ main( int argc, char** argv )
 			Atf22v10cRpiIo b;
 			b.Init();
 
-			Blaster::PesArray pes;
-			b.ReadPES( pes );
 
-			std::cout << "PES: ";
 
-			for ( int i = 0; i < b.pesbytes(); ++i )
-			{
-			  std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)pes[ i ] << " ";
-		    }
-			std::cout << std::endl;
 
-			std::cout << "     ";
-			for ( int i = 0; i < b.pesbytes(); ++i )
-			{
-			  std::cout << " " << ( std::isprint( pes [ i ] ) ? static_cast< char >( pes[ i ] ) : '.' ) << " ";
-			}
-
-			
-			//std::copy(pes.begin(), pes.end(), std::ostream_iterator<int>(std::cout));
-			std::cout << std::endl << std::endl;
 
 // READ
-//#ifdef IMPL_GAL_READ
-		auto fuses = b.ReadGAL();
-		Jedec::Format( b, *fuses, pes,  std::cout ); // read fuse rows, UES, cfg.
-		std::cout <<  std::flush;
-//#endif
+			if ( argc == 1 )
+			{
+				Blaster::PesArray pes;
+				b.ReadPES( pes );
+/*
+				std::cout << "PES: ";
 
+				for ( int i = 0; i < b.pesbytes(); ++i )
+				{
+				  std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)pes[ i ] << " ";
+			    }
+				std::cout << std::endl;
+
+				std::cout << "     ";
+				for ( int i = 0; i < b.pesbytes(); ++i )
+				{
+				  std::cout << " " << ( std::isprint( pes [ i ] ) ? static_cast< char >( pes[ i ] ) : '.' ) << " ";
+				}
+*/			
+				//std::copy(pes.begin(), pes.end(), std::ostream_iterator<int>(std::cout));
+				std::cout << std::endl << std::endl;
+					auto fuses = b.ReadGAL();
+					Jedec::Format( b, *fuses, pes,  std::cout ); // read fuse rows, UES, cfg.
+					std::cout <<  std::flush;
+				}
 
 /* Verify
         if(!CheckJEDEC(wnd)) return TRUE;
@@ -81,15 +83,38 @@ main( int argc, char** argv )
 
 		if ( argc > 1 )
 		{
-			//  "/Users/sam/JSMOTOR.jed"
-			auto fuseMap = Jedec::Load( argv[ 1 ], b );
-
-			if ( !b.TestProperGAL() )
+			if ( std::string( argv[1] ) == "--erase" )
 			{
-				return -1;
-			} 
-	        
-	        b.WriteGal( *fuseMap );
+			        b.Erase();
+			}
+			else
+			{
+
+			/*	if ( !b.TestProperGAL() )
+				{
+					return -1;
+				} */
+		        
+
+				//  "/Users/sam/JSMOTOR.jed"
+				auto fuseMap = Jedec::Load( argv[ 1 ], b );
+
+				int linechar = 0;
+				for (auto const& c : *fuseMap )
+				{
+	    			std::cout << (char)( '0' + c ) << ' ';
+	    			if ( ++linechar == 44 )
+	    			{
+	    				linechar = 0;
+	    				std::cout << std::endl;
+	    			}
+	    		}
+
+				std::cout << std::endl;
+
+
+		        b.WriteGal( *fuseMap );
+	    	}
 	    }
 
  /*       if(security)

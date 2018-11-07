@@ -91,6 +91,7 @@ GpioAtf16::SetSTB( int state )
 {
 #ifdef __linux
   digitalWrite( STB, state );
+#endif
 }
 
 
@@ -99,25 +100,28 @@ GpioAtf16::SetPV( int state )
 {
 #ifdef __linux
   digitalWrite( PV, state );
+#endif
 }
 
 void 
 GpioAtf16::SetRow( int row )
 {  
- #ifdef __linux
+#ifdef __linux
  digitalWrite( RA0, row & 0x01 );
   digitalWrite( RA1, row & 0x02 );
   digitalWrite( RA2, row & 0x04 );
   digitalWrite( RA3, row & 0x08 );
   digitalWrite( RA4, row & 0x10 );
   digitalWrite( RA5, row & 0x20 );
+#endif
 }
 
 void 
 GpioAtf16::SetSDIN( int state )
 {
- #ifdef __linux
+#ifdef __linux
  digitalWrite( SDIN, state );
+#endif
 }
 
 void 
@@ -125,13 +129,15 @@ GpioAtf16::SetSCLK( int state )
 {
 #ifdef __linux
   digitalWrite( SCLK, state );
+#endif
 }
 
 bool 
 GpioAtf16::GetSDOUT()
 {
 #ifdef __linux
-  return digitalRead( SDOUT ) != 0;;
+  return digitalRead( SDOUT ) != 0;
+#endif
 }
 
 bool 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Atf22v10cBlaster.hpp"
 
 
@@ -109,12 +111,17 @@ Atf22v10cBlaster::ParsePes( const PesArray& pes )
  void 
  Atf22v10cBlaster::WriteFuses( const FuseArray& fuses )
  {
+
+ 	// disable power-down feature (JEDEC bit #5892)
+
+
 	SetRow( 0 ); // RA0-5 low
 	for( int row = 0; row < rows(); row++)
 	{
+		std::cout << "row: " << row << std::endl;
 		for( int bit = 0; bit < bits(); bit++ )
 		{
-			SendBit( fuses[ rows() * bit + row ] );
+			SendBit( fuses[ ( rows() * bit ) + row ] );
 		}
 		SendAddress( 6, row );  // send address 6 bits
 		SetPV( 1 );
@@ -144,12 +151,14 @@ Atf22v10cBlaster::ParsePes( const PesArray& pes )
 	Strobe( progtime() );
 	SetPV( 0 );
 
-	// disable power-down feature (JEDEC bit #5892)
 	SetRow( 0 );
 	SendAddress( 6, 59 );
 	SetPV( 1 );
 	Strobe( progtime() );
 	SetPV( 0 );
+	
+	return;
+
  }
 
 

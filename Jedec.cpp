@@ -51,9 +51,11 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
     unsigned char ch;
     char buffer[16384];
 
+
     time( &now );
     n = sprintf( buffer, "JEDEC file for %s created on %s", gal.name().c_str(), asctime( localtime( &now ) ) ) - 1;
     n += sprintf( buffer + n, "\r\n*QP%d*QF%d*QV0*F0*G0*X0*\r\n", gal.pins(), gal.fuses()) ;
+
 
     for( i = k = 0; i < gal.bits(); i++ )
     {
@@ -72,9 +74,10 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
         n += sprintf( buffer+n, "*\r\n" );
         if( unused ) 
         {
-          n = start;
+     //     n = start;
         }
     }
+
     if( k < gal.uesfuse() )
     {
         start = n;
@@ -91,7 +94,7 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
         n += sprintf( buffer + n, "*\r\n");
         if ( unused ) 
         {
-          n=start;
+        //  n=start;
         }
     }
     start = n;
@@ -129,7 +132,7 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
     n += sprintf( buffer + n, "*\r\n" );
     if ( unused )
     {
-      n = start;
+    //  n = start;
     }
     if( k < gal.fuses() )
     {
@@ -147,7 +150,7 @@ Jedec::Format( const Blaster& gal, const Blaster::FuseArray& fuses, const Blaste
        n += sprintf( buffer + n, "*\r\n" );
        if ( unused )
        {
-         n = start;
+     //    n = start;
        }
     }
     n += sprintf( buffer + n,"N PES" );
